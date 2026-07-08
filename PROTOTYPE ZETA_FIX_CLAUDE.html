@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>PRIME – PT Pegadaian | ZETA Credit Decision</title>
+<style>
+  /* ── TOKENS ── */
+  :root {
+    --green-dark:   #1a5c38;
+    --green-prime:  #2d8653;
+    --green-mid:    #3aaa6e;
+    --green-light:  #e8f5ee;
+    --green-border: #b2dac4;
+    --gold:         #c8a84b;
+    --gold-light:   #fdf6e3;
+    --white:        #ffffff;
+    --gray-100:     #f7f8fa;
+    --gray-200:     #eaecf0;
+    --gray-400:     #9ea8b3;
+    --gray-600:     #5a6472;
+    --gray-900:     #1c2333;
+    --red:          #c0392b;
+    --red-light:    #fdf0ee;
+    --orange:       #d4770a;
+    --orange-light: #fef6e7;
+    --blue:         #1a6faf;
+    --blue-light:   #e8f2fb;
+    --font-body:    'Segoe UI', system-ui, sans-serif;
+    --sidebar-w:    220px;
+    --radius:       6px;
+    --shadow-card:  0 1px 4px rgba(0,0,0,.10);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--font-body); background: var(--gray-100); color: var(--gray-900); display: flex; height: 100vh; overflow: hidden; }
+
+  /* ── SIDEBAR ── */
+  .sidebar {
+    width: var(--sidebar-w);
+    background: linear-gradient(180deg, var(--green-dark) 0%, #0f3d24 100%);
+    display: flex; flex-direction: column;
+    flex-shrink: 0; height: 100vh; overflow-y: auto;
+  }
+  .sidebar-logo {
+    padding: 18px 16px 14px;
+    border-bottom: 1px solid rgba(255,255,255,.12);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .logo-circle {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: var(--gold);
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800; font-size: 14px; color: var(--green-dark); letter-spacing: -.5px;
+  }
+  .logo-text { color: #fff; font-size: 15px; font-weight: 700; line-height: 1.2; }
+  .logo-sub  { color: rgba(255,255,255,.55); font-size: 9px; letter-spacing: .6px; text-transform: uppercase; }
+
+  .nav-section { padding: 10px 0 4px; }
+  .nav-label   { color: rgba(255,255,255,.38); font-size: 9.5px; letter-spacing: .9px; text-transform: uppercase; padding: 0 16px 4px; }
+  .nav-item {
+    display: flex; align-items: center; gap: 9px;
+    padding: 9px 16px; color: rgba(255,255,255,.78);
+    font-size: 12.5px; cursor: pointer; border-left: 3px solid transparent;
+    transition: background .15s, color .15s;
+  }
+  .nav-item:hover { background: rgba(255,255,255,.08); color: #fff; }
+  .nav-item.active { background: rgba(255,255,255,.13); color: #fff; border-left-color: var(--gold); }
+  .nav-item svg { flex-shrink: 0; opacity: .8; }
+
+  /* ── MAIN ── */
+  .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+
+  /* topbar */
+  .topbar {
+    background: var(--white); border-bottom: 1px solid var(--gray-200);
+    padding: 0 24px; height: 52px; display: flex; align-items: center; justify-content: space-between;
+    flex-shrink: 0;
+  }
+  .topbar-left { display: flex; align-items: center; gap: 10px; }
+  .topbar-title { font-size: 13.5px; font-weight: 600; color: var(--gray-900); }
+  .topbar-breadcrumb { font-size: 11.5px; color: var(--gray-400); }
+  .topbar-right { display: flex; align-items: center; gap: 14px; }
+  .user-badge {
+    display: flex; align-items: center; gap: 8px;
+    background: var(--green-light); border: 1px solid var(--green-border);
+    border-radius: 20px; padding: 4px 12px 4px 6px;
+  }
+  .user-avatar {
+    width: 26px; height: 26px; border-radius: 50%;
+    background: var(--green-prime); color: #fff;
+    display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700;
+  }
+  .user-name { font-size: 12px; font-weight: 600; color: var(--green-dark); }
+
+  /* content scroll */
+  .content { flex: 1; overflow-y: auto; padding: 22px 24px; }
+
+  /* ── PAGE HEADER ── */
+  .page-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 18px; }
+  .page-title  { font-size: 17px; font-weight: 700; color: var(--gray-900); }
+  .page-sub    { font-size: 12px; color: var(--gray-400); margin-top: 2px; }
+  .zeta-badge  {
+    display: flex; align-items: center; gap: 6px;
+    background: linear-gradient(135deg, var(--green-prime), var(--green-mid));
+    color: #fff; border-radius: 20px; padding: 6px 14px;
+    font-size: 11.5px; font-weight: 700; letter-spacing: .3px; box-shadow: 0 2px 6px rgba(45,134,83,.35);
+  }
+
+  /* ── STAT CARDS ── */
+  .stat-row { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; margin-bottom: 20px; }
+  .stat-card {
+    background: var(--white); border-radius: var(--radius); padding: 14px 16px;
+    border: 1px solid var(--gray-200); box-shadow: var(--shadow-card);
+    display: flex; align-items: center; gap: 12px;
+  }
+  .stat-icon { width: 38px; height: 38px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .stat-icon.green  { background: var(--green-light); }
+  .stat-icon.gold   { background: var(--gold-light); }
+  .stat-icon.red    { background: var(--red-light); }
+  .stat-icon.blue   { background: var(--blue-light); }
+  .stat-val  { font-size: 20px; font-weight: 800; color: var(--gray-900); }
+  .stat-lbl  { font-size: 11px; color: var(--gray-400); margin-top: 1px; }
+
+  /* ── TOOLBAR ── */
+  .toolbar {
+    background: var(--white); border: 1px solid var(--gray-200);
+    border-radius: var(--radius); padding: 12px 16px;
+    display: flex; align-items: center; gap: 10px; margin-bottom: 14px;
+    box-shadow: var(--shadow-card);
+  }
+  .search-wrap { flex: 1; position: relative; }
+  .search-wrap svg { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); pointer-events: none; }
+  .search-wrap input {
+    width: 100%; padding: 7px 10px 7px 32px;
+    border: 1px solid var(--gray-200); border-radius: var(--radius);
+    font-size: 12.5px; color: var(--gray-900); background: var(--gray-100);
+    outline: none; transition: border .15s;
+  }
+  .search-wrap input:focus { border-color: var(--green-mid); background: #fff; }
+  .filter-select {
+    padding: 7px 10px; border: 1px solid var(--gray-200); border-radius: var(--radius);
+    font-size: 12px; color: var(--gray-600); background: var(--gray-100);
+    outline: none; cursor: pointer;
+  }
+
+  /* ── TABLE ── */
+  .table-card { background: var(--white); border: 1px solid var(--gray-200); border-radius: var(--radius); box-shadow: var(--shadow-card); overflow: hidden; }
+  .table-card table { width: 100%; border-collapse: collapse; }
+  .table-card thead th {
+    background: var(--green-light); color: var(--green-dark);
+    font-size: 11px; font-weight: 700; letter-spacing: .4px; text-transform: uppercase;
+    padding: 10px 14px; text-align: left; border-bottom: 2px solid var(--green-border);
+  }
+  .table-card tbody tr { border-bottom: 1px solid var(--gray-200); transition: background .1s; }
+  .table-card tbody tr:last-child { border-bottom: none; }
+  .table-card tbody tr:hover { background: var(--gray-100); }
+  .table-card tbody td { padding: 10px 14px; font-size: 12.5px; color: var(--gray-900); vertical-align: middle; }
+  .td-name { font-weight: 600; }
+  .td-id   { color: var(--gray-400); font-size: 11px; }
+
+  /* badges */
+  .badge {
+    display: inline-flex; align-items: center;
+    padding: 3px 9px; border-radius: 12px; font-size: 11px; font-weight: 600;
+  }
+  .badge.lancar   { background: var(--green-light); color: var(--green-dark); }
+  .badge.dpk      { background: var(--blue-light);  color: var(--blue); }
+  .badge.kurang   { background: var(--orange-light); color: var(--orange); }
+  .badge.macet    { background: var(--red-light);    color: var(--red); }
+
+  /* prediction button */
+  .btn-predict {
+    background: var(--green-prime); color: #fff; border: none; border-radius: var(--radius);
+    padding: 6px 12px; font-size: 11.5px; font-weight: 600; cursor: pointer;
+    display: flex; align-items: center; gap: 5px; transition: background .15s;
+  }
+  .btn-predict:hover { background: var(--green-dark); }
+
+  /* ── MODAL ── */
+  .modal-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 100;
+    display: none; align-items: center; justify-content: center;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--white); border-radius: 10px; width: 760px; max-width: 96vw;
+    max-height: 90vh; overflow-y: auto; box-shadow: 0 8px 40px rgba(0,0,0,.22);
+    animation: popIn .2s ease;
+  }
+  @keyframes popIn { from { opacity:0; transform: scale(.95) translateY(6px); } to { opacity:1; transform: none; } }
+
+  .modal-header {
+    background: linear-gradient(135deg, var(--green-dark) 0%, var(--green-prime) 100%);
+    color: #fff; padding: 18px 22px; border-radius: 10px 10px 0 0;
+    display: flex; align-items: flex-start; justify-content: space-between;
+  }
+  .modal-header-title { font-size: 15px; font-weight: 700; }
+  .modal-header-sub   { font-size: 11.5px; opacity: .75; margin-top: 2px; }
+  .modal-close {
+    background: rgba(255,255,255,.2); border: none; color: #fff;
+    width: 28px; height: 28px; border-radius: 50%; cursor: pointer; font-size: 16px;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .modal-close:hover { background: rgba(255,255,255,.35); }
+
+  .modal-body { padding: 20px 22px; }
+
+  /* info grid */
+  .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 20px; margin-bottom: 18px; }
+  .info-item { border: 1px solid var(--gray-200); border-radius: var(--radius); padding: 8px 12px; }
+  .info-lbl  { font-size: 10.5px; color: var(--gray-400); text-transform: uppercase; letter-spacing: .4px; }
+  .info-val  { font-size: 13px; font-weight: 600; color: var(--gray-900); margin-top: 2px; }
+
+  /* section title */
+  .section-title {
+    font-size: 12px; font-weight: 700; color: var(--green-dark);
+    text-transform: uppercase; letter-spacing: .5px;
+    border-left: 3px solid var(--green-prime); padding-left: 8px;
+    margin: 16px 0 10px;
+  }
+
+  /* prob bars */
+  .prob-list { display: flex; flex-direction: column; gap: 8px; }
+  .prob-row  { display: grid; grid-template-columns: 130px 1fr 48px; align-items: center; gap: 8px; }
+  .prob-lbl  { font-size: 12px; font-weight: 500; color: var(--gray-600); }
+  .prob-track { height: 8px; background: var(--gray-200); border-radius: 4px; overflow: hidden; }
+  .prob-fill  { height: 100%; border-radius: 4px; transition: width .6s ease; }
+  .prob-fill.lancar { background: var(--green-mid); }
+  .prob-fill.dpk    { background: var(--blue); }
+  .prob-fill.kurang { background: var(--orange); }
+  .prob-fill.dirag  { background: #a855f7; }
+  .prob-fill.macet  { background: var(--red); }
+  .prob-pct  { font-size: 12px; font-weight: 700; color: var(--gray-900); text-align: right; }
+
+  /* verdict */
+  .verdict-box {
+    border-radius: var(--radius); padding: 12px 16px;
+    display: flex; align-items: center; gap: 10px; margin: 14px 0;
+  }
+  .verdict-box.green { background: var(--green-light); border: 1px solid var(--green-border); }
+  .verdict-box.red   { background: var(--red-light);   border: 1px solid #f5c6c1; }
+  .verdict-box.orange{ background: var(--orange-light); border: 1px solid #f5d4a0; }
+  .verdict-label { font-size: 13px; font-weight: 700; }
+  .verdict-desc  { font-size: 11.5px; color: var(--gray-600); margin-top: 2px; }
+
+  /* analytical support */
+  .support-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .support-item {
+    display: flex; align-items: flex-start; gap: 8px;
+    background: var(--gray-100); border: 1px solid var(--gray-200);
+    border-radius: var(--radius); padding: 8px 10px;
+    font-size: 12px; color: var(--gray-600);
+  }
+  .support-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; margin-top: 3px; }
+  .support-dot.ok   { background: var(--green-mid); }
+  .support-dot.warn { background: var(--orange); }
+  .support-dot.info { background: var(--blue); }
+
+  /* 5C summary */
+  .fivec-grid { display: grid; grid-template-columns: repeat(5,1fr); gap: 8px; }
+  .fivec-card {
+    text-align: center; padding: 10px 6px;
+    border-radius: var(--radius); border: 1px solid var(--gray-200);
+    background: var(--gray-100);
+  }
+  .fivec-icon { font-size: 20px; }
+  .fivec-name { font-size: 10px; font-weight: 700; color: var(--gray-600); margin-top: 3px; text-transform: uppercase; }
+  .fivec-score{ font-size: 13px; font-weight: 800; margin-top: 2px; }
+  .fivec-score.high { color: var(--green-prime); }
+  .fivec-score.mid  { color: var(--orange); }
+  .fivec-score.low  { color: var(--red); }
+
+  /* footer */
+  .modal-footer {
+    border-top: 1px solid var(--gray-200); padding: 12px 22px;
+    display: flex; justify-content: space-between; align-items: center;
+    background: var(--gray-100);
+  }
+  .footer-note { font-size: 10.5px; color: var(--gray-400); font-style: italic; }
+  .btn-close-modal {
+    background: var(--gray-200); border: none; border-radius: var(--radius);
+    padding: 8px 18px; font-size: 12.5px; font-weight: 600; cursor: pointer;
+    color: var(--gray-600);
+  }
+  .btn-close-modal:hover { background: var(--gray-400); color: #fff; }
+
+  /* scrollbar */
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-thumb { background: var(--green-border); border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-circle">PG</div>
+    <div>
+      <div class="logo-text">PRIME</div>
+      <div class="logo-sub">PT Pegadaian</div>
+    </div>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-label">Utama</div>
+    <div class="nav-item" onclick="setNav(this)">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+      Dashboard
+    </div>
+    <div class="nav-item" onclick="setNav(this)">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      Dashboard Kinerja
+    </div>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-label">Kredit</div>
+    <div class="nav-item" onclick="setNav(this)">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+      Pra Kredit
+    </div>
+    <div class="nav-item" onclick="setNav(this)">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+      SIKP
+    </div>
+    <div class="nav-item active" onclick="setNav(this)">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+      Pinjaman
+    </div>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-label">Sistem</div>
+    <div class="nav-item" onclick="setNav(this)">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+      Admin
+    </div>
+    <div class="nav-item" onclick="setNav(this)">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      PEFINDO
+    </div>
+    <div class="nav-item" onclick="setNav(this)">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      Unlock NPL
+    </div>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-label">Laporan</div>
+    <div class="nav-item" onclick="setNav(this)">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      Daftar Pinjaman Syariah
+    </div>
+  </div>
+
+  <!-- ZETA badge at bottom -->
+  <div style="margin-top: auto; padding: 14px 12px;">
+    <div style="background: rgba(200,168,75,.15); border: 1px solid rgba(200,168,75,.35); border-radius: 8px; padding: 10px 12px;">
+      <div style="color: var(--gold); font-size: 11px; font-weight: 800; letter-spacing: .5px;">⚡ ZETA</div>
+      <div style="color: rgba(255,255,255,.6); font-size: 10px; margin-top: 2px; line-height: 1.4;">Zero Paper for Data-Driven Credit Decision</div>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="topbar-title">Daftar Pengajuan Pembiayaan</div>
+      <div class="topbar-breadcrumb" style="margin-left: 8px;">/ Pinjaman / Pengajuan</div>
+    </div>
+    <div class="topbar-right">
+      <div style="font-size: 11.5px; color: var(--gray-400);" id="clock">--:--:--</div>
+      <div class="user-badge">
+        <div class="user-avatar">CZ</div>
+        <div class="user-name">Chiko Zet Oroh</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="content">
+
+    <!-- PAGE HEADER -->
+    <div class="page-header">
+      <div>
+        <div class="page-title">Pengajuan Pembiayaan – ZETA Integration</div>
+        <div class="page-sub">Data survei nasabah diterima dari ZETA E-Form · Model: Random Forest Classifier</div>
+      </div>
+      <div class="zeta-badge">
+        <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        ZETA Active
+      </div>
+    </div>
+
+    <!-- STAT CARDS -->
+    <div class="stat-row">
+      <div class="stat-card">
+        <div class="stat-icon green">
+          <svg width="18" height="18" fill="none" stroke="#2d8653" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </div>
+        <div>
+          <div class="stat-val">4</div>
+          <div class="stat-lbl">Total Pengajuan</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon gold">
+          <svg width="18" height="18" fill="none" stroke="#c8a84b" stroke-width="2" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <div>
+          <div class="stat-val" style="color: var(--green-prime);">3</div>
+          <div class="stat-lbl">Prediksi Lancar</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon red">
+          <svg width="18" height="18" fill="none" stroke="#c0392b" stroke-width="2" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        </div>
+        <div>
+          <div class="stat-val" style="color: var(--orange);">1</div>
+          <div class="stat-lbl">Perlu Perhatian</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon blue">
+          <svg width="18" height="18" fill="none" stroke="#1a6faf" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        </div>
+        <div>
+          <div class="stat-val">100%</div>
+          <div class="stat-lbl">Analisis Tersedia</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TOOLBAR -->
+    <div class="toolbar">
+      <div class="search-wrap">
+        <svg width="14" height="14" fill="none" stroke="#9ea8b3" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" id="searchBox" placeholder="Cari nama nasabah..." oninput="filterTable()" />
+      </div>
+      <select class="filter-select" onchange="filterTable()" id="filterProduk">
+        <option value="">Semua Produk</option>
+        <option>KCA</option>
+        <option>Kreasi Ultra Mikro</option>
+        <option>KUR</option>
+      </select>
+      <select class="filter-select" onchange="filterTable()" id="filterPrediksi">
+        <option value="">Semua Prediksi</option>
+        <option>Lancar</option>
+        <option>Kurang Lancar</option>
+      </select>
+    </div>
+
+    <!-- TABLE -->
+    <div class="table-card">
+      <table>
+        <thead>
+          <tr>
+            <th>ID Nasabah</th>
+            <th>Nama Nasabah</th>
+            <th>Produk</th>
+            <th>Tenor</th>
+            <th>Tujuan Pembiayaan</th>
+            <th>Tanggal Survey</th>
+            <th>Prediksi</th>
+            <th>Aksi</th>
+          </tr>
+        </thead>
+        <tbody id="nasabahTable">
+          <!-- JS filled -->
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</main>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModalOutside(event)">
+  <div class="modal" id="modalBox">
+    <div class="modal-header">
+      <div>
+        <div class="modal-header-title" id="mName">–</div>
+        <div class="modal-header-sub" id="mSub">–</div>
+      </div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+
+      <!-- Verdict -->
+      <div class="section-title">Hasil Prediksi Kolektibilitas</div>
+      <div class="verdict-box" id="verdictBox">
+        <div>
+          <div class="verdict-label" id="verdictLabel">–</div>
+          <div class="verdict-desc" id="verdictDesc">–</div>
+        </div>
+      </div>
+
+      <!-- Probability -->
+      <div class="section-title">Distribusi Probabilitas</div>
+      <div class="prob-list" id="probList"></div>
+
+      <!-- Analytical Support -->
+      <div class="section-title">Analytical Support</div>
+      <div class="support-grid" id="supportGrid"></div>
+
+    </div>
+    <div class="modal-footer">
+      <div class="footer-note">⚠ Hasil prediksi bersifat analitik-pendukung. Keputusan akhir tetap pada Account Officer.</div>
+      <button class="btn-close-modal" onclick="closeModal()">Tutup</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── DATA ──
+const nasabah = [
+  {
+    id: "NSB-001", nama: "Muhammad Kusnadi",
+    produk: "KCA", tenor: "12 Bulan", tujuan: "Modal Usaha",
+    tanggal: "21 Jan 2025", petugas: "Nadys",
+    prediksi: "Lancar",
+    prob: [
+      { lbl:"Lancar",                 pct:84.38, cls:"lancar" },
+      { lbl:"Dalam Perhatian Khusus", pct:14.53, cls:"dpk" },
+      { lbl:"Kurang Lancar",          pct:1.07,  cls:"kurang" },
+      { lbl:"Diragukan",              pct:0.03,  cls:"dirag" },
+      { lbl:"Macet",                  pct:0.00,  cls:"macet" },
+    ],
+    support: [
+      { teks:"Pendapatan stabil dan mencukupi", dot:"ok" },
+      { teks:"Riwayat kredit baik",              dot:"ok" },
+      { teks:"Agunan memadai (LTV aman)",        dot:"ok" },
+      { teks:"Lama usaha > 5 tahun",             dot:"ok" },
+    ],
+    verdictCls: "green"
+  },
+  {
+    id: "NSB-002", nama: "Ngadimin",
+    produk: "Kreasi Ultra Mikro", tenor: "24 Bulan", tujuan: "Modal Usaha",
+    tanggal: "21 Jan 2025", petugas: "Nadys",
+    prediksi: "Lancar",
+    prob: [
+      { lbl:"Lancar",                 pct:54.45, cls:"lancar" },
+      { lbl:"Dalam Perhatian Khusus", pct:29.18, cls:"dpk" },
+      { lbl:"Kurang Lancar",          pct:13.62, cls:"kurang" },
+      { lbl:"Diragukan",              pct:2.33,  cls:"dirag" },
+      { lbl:"Macet",                  pct:0.42,  cls:"macet" },
+    ],
+    support: [
+      { teks:"Prediksi lancar namun DPK cukup tinggi", dot:"warn" },
+      { teks:"Monitoring cicilan disarankan",           dot:"info" },
+    ],
+    verdictCls: "green"
+  },
+  {
+    id: "NSB-003", nama: "Edi Ita",
+    produk: "KUR", tenor: "24 Bulan", tujuan: "Modal Usaha",
+    tanggal: "21 Jan 2025", petugas: "Nadys",
+    prediksi: "Kurang Lancar",
+    prob: [
+      { lbl:"Lancar",                 pct:8.90,  cls:"lancar" },
+      { lbl:"Dalam Perhatian Khusus", pct:29.68, cls:"dpk" },
+      { lbl:"Kurang Lancar",          pct:38.48, cls:"kurang" },
+      { lbl:"Diragukan",              pct:16.81, cls:"dirag" },
+      { lbl:"Macet",                  pct:6.09,  cls:"macet" },
+    ],
+    support: [
+      { teks:"Probabilitas gagal bayar signifikan",      dot:"warn" },
+      { teks:"Perlu verifikasi pendapatan tambahan",     dot:"warn" },
+      { teks:"Perhatikan rasio cicilan terhadap income", dot:"info" },
+    ],
+    verdictCls: "orange"
+  },
+  {
+    id: "NSB-004", nama: "Komsa",
+    produk: "KUR", tenor: "36 Bulan", tujuan: "Modal Usaha",
+    tanggal: "21 Jan 2025", petugas: "Nadys",
+    prediksi: "Lancar",
+    prob: [
+      { lbl:"Lancar",                 pct:53.94, cls:"lancar" },
+      { lbl:"Dalam Perhatian Khusus", pct:29.58, cls:"dpk" },
+      { lbl:"Kurang Lancar",          pct:9.86,  cls:"kurang" },
+      { lbl:"Diragukan",              pct:5.00,  cls:"dirag" },
+      { lbl:"Macet",                  pct:1.62,  cls:"macet" },
+    ],
+    support: [
+      { teks:"Prediksi lancar, DPK perlu dipantau", dot:"warn" },
+      { teks:"Monitoring berkala disarankan",        dot:"info" },
+    ],
+    verdictCls: "green"
+  }
+];
+
+// ── RENDER TABLE ──
+function badgeCls(pred) {
+  if (pred === "Lancar") return "lancar";
+  if (pred === "Kurang Lancar") return "kurang";
+  if (pred === "Macet") return "macet";
+  return "dpk";
+}
+
+function renderTable(data) {
+  const tbody = document.getElementById("nasabahTable");
+  tbody.innerHTML = data.map(n => `
+    <tr>
+      <td><div class="td-id">${n.id}</div></td>
+      <td><div class="td-name">${n.nama}</div><div class="td-id">${n.petugas}</div></td>
+      <td>${n.produk}</td>
+      <td>${n.tenor}</td>
+      <td>${n.tujuan}</td>
+      <td>${n.tanggal}</td>
+      <td><span class="badge ${badgeCls(n.prediksi)}">${n.prediksi}</span></td>
+      <td>
+        <button class="btn-predict" onclick="openModal('${n.id}')">
+          <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+          Lihat Prediksi
+        </button>
+      </td>
+    </tr>
+  `).join("");
+}
+renderTable(nasabah);
+
+// ── FILTER ──
+function filterTable() {
+  const q  = document.getElementById("searchBox").value.toLowerCase();
+  const fp = document.getElementById("filterProduk").value;
+  const fpr= document.getElementById("filterPrediksi").value;
+  const filtered = nasabah.filter(n =>
+    (!q  || n.nama.toLowerCase().includes(q)) &&
+    (!fp || n.produk === fp) &&
+    (!fpr|| n.prediksi === fpr)
+  );
+  renderTable(filtered);
+}
+
+// ── MODAL ──
+function openModal(id) {
+  const n = nasabah.find(x => x.id === id);
+  document.getElementById("mName").textContent = n.nama;
+  document.getElementById("mSub").textContent  = `${n.id} · ${n.produk} · ${n.tenor} · Petugas: ${n.petugas}`;
+
+  // Verdict
+  const vbox = document.getElementById("verdictBox");
+  vbox.className = `verdict-box ${n.verdictCls}`;
+  document.getElementById("verdictLabel").textContent = `Prediksi: ${n.prediksi}`;
+  const max = n.prob.reduce((a,b) => a.pct > b.pct ? a : b);
+  document.getElementById("verdictDesc").textContent =
+    `Probabilitas tertinggi: ${max.lbl} (${max.pct}%) · Model: Random Forest Classifier`;
+
+  // Prob bars
+  document.getElementById("probList").innerHTML = n.prob.map(p =>
+    `<div class="prob-row">
+      <div class="prob-lbl">${p.lbl}</div>
+      <div class="prob-track"><div class="prob-fill ${p.cls}" style="width:${p.pct}%"></div></div>
+      <div class="prob-pct">${p.pct}%</div>
+    </div>`
+  ).join("");
+
+  // Support
+  document.getElementById("supportGrid").innerHTML = n.support.map(s =>
+    `<div class="support-item">
+      <div class="support-dot ${s.dot}"></div>
+      <span>${s.teks}</span>
+    </div>`
+  ).join("");
+
+  document.getElementById("modalOverlay").classList.add("open");
+}
+
+function closeModal() { document.getElementById("modalOverlay").classList.remove("open"); }
+function closeModalOutside(e) { if (e.target === document.getElementById("modalOverlay")) closeModal(); }
+
+// ── NAV ──
+function setNav(el) {
+  document.querySelectorAll(".nav-item").forEach(x => x.classList.remove("active"));
+  el.classList.add("active");
+}
+
+// ── CLOCK ──
+function updateClock() {
+  document.getElementById("clock").textContent = new Date().toLocaleTimeString("id-ID");
+}
+setInterval(updateClock, 1000); updateClock();
+</script>
+</body>
+</html>
